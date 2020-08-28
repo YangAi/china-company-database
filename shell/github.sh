@@ -7,6 +7,8 @@ then
 
   echo "123$0"
 else
+
+
   git commit -m "automate save"
   git push
 
