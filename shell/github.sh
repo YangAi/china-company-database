@@ -12,5 +12,5 @@ else
 
 fi
 
-git push
+#git push
 
