@@ -14,7 +14,7 @@ app.use((req, res, next) => {
   next()
 })
 
-app.use('/', serveStatic(path.join(__dirname, '/dist')))
+app.use('/', serveStatic(path.join(__dirname, '../dist')))
 
 // more router
 
