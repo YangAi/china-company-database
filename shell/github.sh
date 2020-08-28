@@ -2,7 +2,7 @@ echo "Start github"
 
 git add .
 
-if [ $0 eq 0]
+if [ -z "$0"]
 then
 
   echo "123$0"
