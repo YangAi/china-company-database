@@ -2,15 +2,14 @@ echo "Start github"
 
 git add .
 
-if [ -z "$0"]
+if [ -z "$1"]
 then
-
-  echo "123$0"
+  git commit -m "$1"
 else
 
-
   git commit -m "automate save"
-  git push
 
 fi
+
+git push
 
