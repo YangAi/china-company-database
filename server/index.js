@@ -79,12 +79,12 @@ app.get('/api/policy-participation/:id', async (req, res, next) => {
 })
 
 app.get('/api/policy-participation/:id/previous', async (req, res, next) => {
-  const participation = await $db.policyParticipation.find({ _id: req.params.id }).sort({_id: -1 }).limit(3)
+  const participation = await $db.policyParticipation.find({ _id: { $gt: req.params.id } }).sort({ _id: -1 }).limit(1)
   res.send(participation)
 })
 
 app.get('/api/policy-participation/:id/next', async (req, res, next) => {
-  const participation = await $db.policyParticipation.find({ _id: req.params.id }).sort({ _id: 1 }).limit(3)
+  const participation = await $db.policyParticipation.find({ _id: { $gt: req.params.id } }).sort({ _id: 1 }).limit(1)
   res.send(participation)
 })
 
