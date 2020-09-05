@@ -2,7 +2,10 @@
 module.exports = {
   prefix: 'tw-',
   important: true,
-  purge: false,
+  purge: [
+    './public/**/*.html',
+    './src/**/*.vue'
+  ],
   theme: {
     screens: {
       sm: '600px',
