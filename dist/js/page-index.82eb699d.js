@@ -1,0 +1,2 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["page-index"],{9261:function(e,n,a){"use strict";a.r(n);var t=function(){var e=this,n=e.$createElement,a=e._self._c||n;return a("div",[a("v-container")],1)},i=[],c={name:"index"},r=c,o=a("2877"),s=a("6544"),u=a.n(s),l=a("a523"),p=Object(o["a"])(r,t,i,!1,null,"5eca06e8",null);n["default"]=p.exports;u()(p,{VContainer:l["a"]})}}]);
+//# sourceMappingURL=page-index.82eb699d.js.map

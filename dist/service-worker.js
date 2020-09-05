@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.438360f3a3130a7201742e075f1835f5.js"
+  "/precache-manifest.ed09f54771e72e7f25c6a077cda48702.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "china-company-database"});
