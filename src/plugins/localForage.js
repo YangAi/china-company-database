@@ -3,24 +3,23 @@ import dayjs from 'dayjs'
 export default {
   get: async (key) => {
     const data = await localforage.getItem(key)
+    console.log('localforage', data)
 
     if (!data) { return data }
 
-    const { expire, value } = data
+    const { expiredAt, value } = data
 
-    if (expire && expire.isBefore(dayjs())) {
+    if (expiredAt && dayjs(expiredAt).isBefore(dayjs())) {
       localforage.removeItem(key)
       return null
     }
 
     return value
   },
-  set: (key, value, expire = false, callback = false) => {
-    if (expire && typeof expire === 'number') { expire = Math.round(expire * 1000 + Date.now()) } // * 1000 to use seconds
+  set: (key, value, expiredAt = false, callback = false) => {
+    if (expiredAt && !dayjs(expiredAt).isValid()) { expiredAt = false }
 
-    if (expire && dayjs(expire).isValid()) { expire = dayjs(expire) }
-
-    return localforage.setItem(key, { value, expire }, expire && callback)
+    return localforage.setItem(key, { value, expiredAt }, expiredAt && callback)
   },
   remove: (key) => {
     return localforage.removeItem(key)
