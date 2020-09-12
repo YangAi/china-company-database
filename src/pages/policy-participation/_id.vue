@@ -1,14 +1,15 @@
 <template>
     <v-container class="tw-mt-20">
       <v-card class="tw-mb-2">
-        <v-card-title>{{ policy.title }}</v-card-title>
+        <v-card-title>{{ bundle.title }}</v-card-title>
         <v-container>
-          <data-list :value="_.pick(policy, ['stockCode', 'stockName', 'publishedAt'])" />
+          <v-text-field v-model="search" label="Search" />
+          <data-list :value="companyList" />
         </v-container>
       </v-card>
       <v-card class="tw-mb-2">
         <v-container>
-          <div v-html="policy.content[0]" />
+<!--          <div v-html="policy.content[0]" />-->
         </v-container>
       </v-card>
       <v-card class="tw-mb-2">
@@ -24,17 +25,34 @@
 <script>
 import DataList from '@/components/common/DataList'
 export default {
-  name: '_id',
+  name: 'vue._id',
   components: { DataList },
   async created () {
-    const res = await this.$api.policyParticipation.find('5f546f45279cc8e56dc50efa')
-    if (res.success) {
-      this.policy = res.data
+    if (this.$route.params.id !== this.$store.state.policyParticipation.bundleId) {
+      await this.$store.dispatch('policyParticipation/setCurrent')
     }
   },
   data () {
     return {
-      policy: {}
+      search: ''
+    }
+  },
+  computed: {
+    bundle () {
+      return this.$store.state.policyParticipation.current
+    },
+    companyList () {
+      if (!this.bundle.aggregations) return []
+      let data = this._.find(this.bundle.aggregations, { AggKey: 'company' }).Items
+      console.log(data)
+      if (this.search.length > 0) {
+        data = data.filter(item => {
+          return item.N.includes(this.search)
+        })
+      }
+      return data.map(item => {
+        return { label: item.N, value: item.C }
+      })
     }
   }
 }

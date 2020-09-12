@@ -23,7 +23,7 @@ export default {
   name: 'index',
   components: { DataList },
   async created () {
-    const res = await this.$api.policyParticipation.index()
+    const res = await this.$api.policyParticipationBundle.index()
     if (res.success) {
       this.list = res.data
     }

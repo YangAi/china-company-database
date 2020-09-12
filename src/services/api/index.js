@@ -4,7 +4,8 @@ import config from '../../../config/base.config.js'
 const resource = {
   account: new Resource('/accounts'),
   session: new Resource('/sessions'),
-  policyParticipation: new Resource('/policy-participation')
+  policyParticipation: new Resource('/policy-participation'),
+  policyParticipationBundle: new Resource('/policy-participation-bundles')
   // me: new Resource('/me'),
 }
 
