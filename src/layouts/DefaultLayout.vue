@@ -32,11 +32,13 @@
             {{ $store.state.auth.user.name }}
           </v-toolbar-title>
           <v-avatar size="36" color="primary" dark>
-            <span class="tw-text-white">{{ $store.getters.userName.substring(0,1) }}</span>
+            <span class="tw-text-white">{{ $store.getters.userName.substring(0,1).toUpperCase() }}</span>
           </v-avatar>
         </v-app-bar>
         <v-main>
-          <router-view />
+          <v-fade-transition hide-on-leave>
+            <router-view :key="$route.path" />
+          </v-fade-transition>
         </v-main>
       </v-app>
     </v-app>
@@ -47,23 +49,8 @@
 export default {
   name: 'DefaultLayout',
   async created () {
-    const token = await this.$forage.get('token')
-    if (token) {
-      try {
-        const res = await this.$api.session.index({
-          token
-        })
-        if (res.success) {
-          this.$store.dispatch('setUser', res.data)
-          return
-        }
-      } catch (e) {
-        console.error(e)
-        this.$store.dispatch('removeUser')
-        await this.$router.push('/auth')
-      }
-    } else {
-      this.$toast.info('Please login first')
+    const user = await this.$store.dispatch('checkToken')
+    if (!user) {
       await this.$router.push('/auth')
     }
   },

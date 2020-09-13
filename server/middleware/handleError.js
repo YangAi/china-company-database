@@ -1,6 +1,7 @@
 const { GeneralError } = require('../utils/response')
 
 const handleError = (err, req, res, next) => {
+  console.log('ERROR')
   if (err instanceof GeneralError) {
     return res.status(err.getCode()).json({
       success: 0,

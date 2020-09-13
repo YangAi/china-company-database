@@ -20,16 +20,16 @@ async function importData (data) {
   highlightFilters.forEach(item => {
     keywords.push(item.Keyword)
   })
-  keywords.push(totalCount)
+  // keywords.push(totalCount)
+
+  let bundleId
   const bundleTitle = keywords.join(',')
   // check duplicates
   const bundleExists = await $db.policyParticipationBundle.findOne({
     totalCount, companyCount, aggregations, highlightFilters
   })
-
   if (isEmpty(bundleExists)) {
-
-    await $db.policyParticipationBundle.create({
+    const res = await $db.policyParticipationBundle.create({
       title: bundleTitle,
       totalCount,
       availableCount: hits.length,
@@ -38,9 +38,11 @@ async function importData (data) {
       highlightFilters,
       hits,
       searchId: [searchId],
-      rawData: [data]
+      rawData: [data],
+      taskCompleted: {}
     })
     console.log('New Policy Participation Bundle')
+    bundleId = res._id
   } else {
     console.log('Updating Bundle')
     if (intersectionWith(bundleExists.hits, hits, isEqual).length * 2 > hits.length) {
@@ -51,6 +53,7 @@ async function importData (data) {
       bundleExists.rawData.push(data)
       bundleExists.availableCount = bundleExists.hits.length
       await $db.policyParticipationBundle.updateOne({ _id: bundleExists._id }, bundleExists, { override: true })
+      bundleId = bundleExists._id
     }
   }
 
@@ -59,7 +62,7 @@ async function importData (data) {
   const output = hits.map(hit => {
     return {
       bundleTitle,
-      id: hit.Id,
+      bundleId,
       key: hit.Source.Key,
       type: hit.Source.NoticeType,
       title: hit.Source.Title,
@@ -71,7 +74,14 @@ async function importData (data) {
       annualReportDownloadUrl: hit.Source.Url,
       filter: data.HighlightFilters,
       content: hit.Highlight.Content,
-      rawData: hit
+      rawData: hit,
+      questions: {
+        hasFunding: {},
+        specificProject: {},
+        matchIndustry: {},
+        degreeOfConfidence: {},
+        comments: {}
+      }
     }
   })
 

@@ -21,7 +21,7 @@ export default {
   name: 'DataList',
   props: {
     value: {
-      type: Array,
+      type: [Array, Object],
       required: true
     }
   },

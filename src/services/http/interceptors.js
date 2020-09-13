@@ -1,12 +1,16 @@
 import Vue from 'vue'
-// import Auth from '@/plugins/auth'
+import $forage from '@/plugins/localForage'
 import { isEmpty } from 'lodash'
 // import i18n from '@/locales'
 
 export default http => {
   http.interceptors.request.use(
-    config => {
+    async config => {
       // config.withCredentials = true // 需要跨域打开此配置
+      const token = await $forage.get('token')
+      if (!config.headers.Authorization && token) {
+        config.headers.Authorization = token
+      }
       return config
     },
     error => {
@@ -15,7 +19,7 @@ export default http => {
   )
   http.interceptors.response.use(
     response => {
-      // var token = response.headers.authorization
+      // var token = response.headers.Authorization
       // if (token) {
       //   Auth.setToken(token)
       // }

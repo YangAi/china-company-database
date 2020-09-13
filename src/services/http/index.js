@@ -14,3 +14,14 @@ const http = axios.create({
 interceptors(http)
 
 export default http
+
+/**
+ * Helper method to set the header with the token
+ */
+export function setToken (token) {
+  if (token) {
+    http.defaults.headers.common.Authorization = `${token}`
+  } else {
+    http.defaults.headers.common.Authorization = false
+  }
+}

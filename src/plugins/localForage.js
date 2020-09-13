@@ -3,7 +3,6 @@ import dayjs from 'dayjs'
 export default {
   get: async (key) => {
     const data = await localforage.getItem(key)
-    console.log('localforage', data)
 
     if (!data) { return data }
 

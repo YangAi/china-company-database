@@ -21,16 +21,9 @@
 export default {
   name: 'LandingLayout',
   async created () {
-    const token = await this.$forage.get('token')
-    if (token) {
-      const res = await this.$api.session.index({
-        token
-      })
-      if (res.success) {
-        await this.$store.dispatch('setUser', res.data)
-        this.$toast.success('Welcome back')
-        await this.$router.push('/')
-      }
+    const user = await this.$store.dispatch('checkToken')
+    if (user) {
+      await this.$router.push('/')
     }
   }
 }

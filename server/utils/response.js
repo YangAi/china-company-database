@@ -1,24 +1,35 @@
 class GeneralError extends Error {
-  constructor (message) {
+  constructor (message = '') {
     super()
-    this.message = message
+    this.message = message || this.getMessage()
+  }
+
+  getMessage () {
+    if (this instanceof BadRequestError) {
+      return 'Bad Request'
+    } if (this instanceof ForbiddenError) {
+      return 'Forbidden'
+    } if (this instanceof NotFoundError) {
+      return 'Not Found'
+    }
+    return 'Internal Error'
   }
 
   getCode () {
-    if (this instanceof BadRequest) {
+    if (this instanceof BadRequestError) {
       return 400
-    } if (this instanceof Forbidden) {
+    } if (this instanceof ForbiddenError) {
       return 403
-    } if (this instanceof NotFound) {
+    } if (this instanceof NotFoundError) {
       return 404
     }
     return 500
   }
 }
 
-class BadRequest extends GeneralError { }
-class Forbidden extends GeneralError { }
-class NotFound extends GeneralError { }
+class BadRequestError extends GeneralError { }
+class ForbiddenError extends GeneralError { }
+class NotFoundError extends GeneralError { }
 
 function apiResponse (data, message) {
   return {
@@ -32,7 +43,7 @@ function apiResponse (data, message) {
 
 module.exports = {
   GeneralError,
-  BadRequest,
-  NotFound,
+  BadRequestError,
+  NotFoundError,
   apiResponse
 }

@@ -1,18 +1,16 @@
 const $db = require('../../lib/mongoose')
 const dayjs = require('dayjs')
-const { BadRequest, apiResponse } = require('../utils/response')
+const { BadRequestError, apiResponse } = require('../utils/response')
 const crypto = require('crypto')
 
 module.exports = function (app) {
   app.get('/api/sessions', async (req, res, next) => {
     try {
-      console.log(req.query)
       const account = await $db.account.findOne({
         token: req.query.token
       })
-      console.log(account)
-      if (!account) throw new BadRequest('Account does not exist')
-      if (dayjs(account.expiredAt).isBefore(dayjs())) throw new BadRequest('Token expired')
+      if (!account) throw new BadRequestError('Account does not exist')
+      if (dayjs(account.expiredAt).isBefore(dayjs())) throw new BadRequestError('Token expired')
       res.send(apiResponse(account))
     } catch (e) {
       next(e)

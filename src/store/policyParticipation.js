@@ -1,6 +1,6 @@
 import router from '../router'
 import $api from '../services/api'
-import { findIndex } from 'lodash'
+import { invertBy } from 'lodash'
 const state = {
   bundleId: false,
   current: {}
@@ -8,9 +8,7 @@ const state = {
 
 const mutations = {
   'PolicyParticipation//SET_CURRENT' (state, value) {
-    console.log('mutation', value)
     state.current = value
-    console.log('state', state.current)
   },
   'PolicyParticipation//INITIALIZE' (state, value) {
     state.bundleId = value
@@ -18,24 +16,26 @@ const mutations = {
 }
 
 const actions = {
-  async setCurrent ({ commit }) {
-    const res = await $api.policyParticipationBundle.find(router.currentRoute.params.id)
-    if (res.success) {
-      commit('PolicyParticipation//SET_CURRENT', res.data)
-      commit('PolicyParticipation//INITIALIZE', router.currentRoute.params.id)
+  async setCurrent ({ commit }, bundleId) {
+    try {
+      const res = await $api.policyParticipationBundle.find(bundleId || router.currentRoute.params.bundle)
+      if (res.success) {
+        commit('PolicyParticipation//SET_CURRENT', res.data)
+        commit('PolicyParticipation//INITIALIZE', router.currentRoute.params.bundle)
+        return res.data
+      } else {
+        return false
+      }
+    } catch (e) {
+      console.log(e)
+      return false
     }
   }
 }
 
 const getters = {
-  getCurrentPolicyParticipation (state, getters) {
-    return findIndex(state.current.hits, router.currentRoute.params.record)
-  },
-  getPreviousPolicyParticipation (state, getters) {
-    return getters.getCurrentPolicyParticipation() > 0 ? getters.current - 1 : getters.current
-  },
-  getNextPolicyParticipation (state, getters) {
-    return getters.getCurrentPolicyParticipation() < state.current.hits.length - 1 ? getters.current + 1 : getters.current
+  tasks (state) {
+    return invertBy(state.current.taskCompleted) || []
   }
 }
 
