@@ -17,12 +17,15 @@
         <v-btn outlined x-large
                v-else @click="resumeTask">Resume 继续</v-btn>
       </v-container>
-      <v-card class="tw-mb-2">
-        <v-container>
-          <v-text-field v-model="search" label="Search" />
-          <data-list :value="companyList" />
+      <div class="tw-bg-gray-100">
+        <v-container class="tw-mb-2">
+          <v-subheader>Company List</v-subheader>
+          <v-container>
+            <v-text-field solo v-model="search" label="Search Company..." />
+            <data-list :value="companyList" />
+          </v-container>
         </v-container>
-      </v-card>
+      </div>
     </div>
 </template>
 
@@ -59,7 +62,7 @@ export default {
       } : []
     },
     progress () {
-      return this.tasksFinished.length * 100 / this.bundle.availableCount
+      return this._.round(this.tasksFinished.length * 100 / this.bundle.availableCount, 1)
     },
     itemGroup () {
       return this._.invertBy(this.bundle.taskCompleted)

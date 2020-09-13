@@ -37,6 +37,9 @@ async function importData (data) {
       aggregations,
       highlightFilters,
       hits,
+      tags: [],
+      industry: [],
+      location: [],
       searchId: [searchId],
       rawData: [data],
       taskCompleted: {}
@@ -71,7 +74,7 @@ async function importData (data) {
       stockName: hit.Source.StockTicker,
       industry: hit.Source.Industry,
       parentIndustry: hit.Source.ParentIndustry,
-      annualReportDownloadUrl: hit.Source.Url,
+      documentUrl: hit.Source.Url,
       filter: data.HighlightFilters,
       content: hit.Highlight.Content,
       rawData: hit,
@@ -87,14 +90,21 @@ async function importData (data) {
 
   await $db.policyParticipation.insertMany(output, (err, res) => {
     if (err) console.log(err)
-    console.log(res)
   })
   console.log('Finished inserting')
 }
 
 (
   async () => {
-    const data = require('../data/policyParticipation/test.json')
-    await importData(data)
+    const folder = '../data/plan'
+    const fs = require('fs')
+
+    fs.readdir(folder, async (err, files) => {
+      for (const file of files) {
+        console.log(file)
+        const data = require(folder + '/' + file)
+        await importData(data)
+      }
+    })
   }
 )()

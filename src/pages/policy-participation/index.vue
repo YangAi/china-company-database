@@ -46,7 +46,7 @@ export default {
     getProgress (bundle) {
       const tasksFinished = this._.invertBy(bundle.taskCompleted[this.$store.getters.userNameCamel]).true
       return tasksFinished
-        ? tasksFinished.length * 100 / bundle.availableCount
+        ? this._.round(tasksFinished.length * 100 / bundle.availableCount, 1)
         : 0
     }
   }

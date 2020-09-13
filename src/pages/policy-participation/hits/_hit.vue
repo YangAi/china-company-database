@@ -10,36 +10,46 @@
         <v-divider />
       </v-container>
       <v-container>
-        <v-row class="tw-items-end">
-          <v-col cols="12" md="8">
-            <v-skeleton-loader typ="article" v-if="_.isEmpty(hit)" />
-            <template v-else>
-              <v-card-subtitle class="tw-text-primary">{{ hit.type }}</v-card-subtitle>
-              <v-card-title>{{ hit.title }}</v-card-title>
-              <v-card-subtitle>{{ hit.createdAt.substr(0, 10) }}</v-card-subtitle>
-            </template>
-          </v-col>
-          <v-col cols="12" md="4" class="tw-text-right">
-            <v-btn @click="previousHit">Previous</v-btn>
-            <v-btn @click="nextHit">Next</v-btn>
+        <v-skeleton-loader v-if="loading && !hit.type" type="article" />
+        <template v-else>
+          <v-row class="tw-items-end">
+            <v-col cols="12" md="8">
+              <v-skeleton-loader typ="article" v-if="_.isEmpty(hit)" />
+              <template v-else>
+                <v-card-subtitle class="tw-text-primary">{{ hit.type }}</v-card-subtitle>
+                <v-card-title>{{ hit.title }}</v-card-title>
+                <v-card-subtitle>{{ hit.createdAt.substr(0, 10) }}</v-card-subtitle>
+              </template>
+            </v-col>
+            <v-col cols="12" md="4" class="tw-text-right">
+              <v-btn @click="previousHit" :loading="loading">Previous</v-btn>
+              <v-btn @click="nextHit" :loading="loading">Next</v-btn>
 
-          </v-col>
-        </v-row>
-        <v-card outlined v-for="(item, index) in hit.content" :key="index">
-          <v-card-subtitle>Related Content:</v-card-subtitle>
-          <v-container v-html="item" />
-        </v-card>
+            </v-col>
+          </v-row>
+          <v-card outlined v-for="(item, index) in hit.content" :key="index" class="tw-mb-2">
+            <v-card-subtitle>Related Content:</v-card-subtitle>
+            <v-container v-html="item" />
+          </v-card>
+        </template>
       </v-container>
       <v-container>
         <v-row>
           <v-col :cols="7">
-            <v-sheet>
-              <v-checkbox v-model="questions.specificProject" label="1. Reference to specific projects" class="mt-0" />
-              <v-checkbox v-model="questions.matchIndustry" :label="`2. ${hit.parentIndustry} / ${hit.industry}`" />
-              <v-text-field v-model="questions.hasFunding" :hint="parseInt(questions.hasFunding || '').toLocaleString() + ' RMB'" label="3. Related to specific funding or investment?" suffix="RMB" />
-              <v-select v-model="questions.degreeOfConfidence" :items="confidenceOptions" label="4. Level of confidence" />
-              <v-textarea v-model="questions.comments" label="5. Comments" :rows="1" />
-              <v-btn block color="primary" @click="submit">Submit</v-btn>
+            <v-sheet outlined>
+              <v-subheader class="tw-mb-4">Questions</v-subheader>
+              <v-container>
+                <v-checkbox v-model="questions.specificProject" label="1. Reference to specific projects？ 能够联系到具体项目" class="mt-0" />
+                <v-checkbox v-model="questions.matchIndustry" :label="`2. ${hit.parentIndustry} / ${hit.industry}`" />
+                <v-text-field v-model="questions.hasFunding"
+                              type="number"
+                              :hint="parseInt(questions.hasFunding || '').toLocaleString() + ' RMB'"
+                              label="3. Related to specific funding or investment?"
+                              suffix="RMB" @change="onFundingChange" />
+                <v-select v-model="questions.degreeOfConfidence" :items="confidenceOptions" label="4. Level of confidence" />
+                <v-textarea v-model="questions.comments" label="5. Comments" :rows="1" />
+                <v-btn block color="primary" @click="submit" :loading="loading">Submit</v-btn>
+              </v-container>
             </v-sheet>
           </v-col>
           <v-col :cols="5">
@@ -47,6 +57,7 @@
               <data-list :value="_.pick(hit, ['stockName', 'stockCode', 'parentIndustry', 'industry'])" />
             </v-sheet>
             <v-card outlined class="tw-mt-8">
+              <v-subheader>Actions</v-subheader>
               <v-list>
                 <v-list-item :href="hit.documentUrl" target="_blank">
                   <v-list-item-title>Download Document</v-list-item-title>
@@ -60,8 +71,13 @@
                     <v-icon>mdi-arrow-right</v-icon>
                   </v-list-item-action>
                 </v-list-item>
+                <v-list-item :href="'http://stockpage.10jqka.com.cn/' + hit.stockCode" target="_blank">
+                  <v-list-item-title>Open 10JQKA 同花顺</v-list-item-title>
+                  <v-list-item-action>
+                    <v-icon>mdi-arrow-right</v-icon>
+                  </v-list-item-action>
+                </v-list-item>
               </v-list>
-              {{ questions }}
             </v-card>
           </v-col>
         </v-row>
@@ -77,6 +93,7 @@ export default {
   async created () {
     const res = await this.$api.policyParticipation.find(this.$route.params.hit)
     if (res.success) {
+      this.loading = false
       this.hit = res.data
       if (this._.isEmpty(this.$store.state.policyParticipation.current)) await this.$store.dispatch('policyParticipation/setCurrent', this.hit.bundleId)
       for (const key in this.hit.questions) {
@@ -94,6 +111,7 @@ export default {
   },
   data () {
     return {
+      loading: true,
       hit: {},
       questions: {
         hasFunding: '',
@@ -123,6 +141,11 @@ export default {
     }
   },
   methods: {
+    onFundingChange (value) {
+      if (value > 0 && this.questions.degreeOfConfidence === undefined) {
+        this.questions.degreeOfConfidence = 2
+      }
+    },
     previousHit () {
       if (this.currentIndex > 0) {
         this.$router.push(this.tasks[this.currentIndex - 1])
@@ -141,9 +164,11 @@ export default {
     },
     async submit () {
       if (this.questions.degreeOfConfidence === undefined) return this.$toast.error('Incomplete answer')
+      this.loading = true
       const res = await this.$api.policyParticipation.put(this.$route.params.hit, {
         questions: this.questions
       })
+      this.loading = false
       if (res.success) {
         this.$toast.info('Saved')
         if (!this.nextHit()) {
