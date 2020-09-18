@@ -1,7 +1,7 @@
 // Getting Data from EastMoney
 async function getCompanyShareholders (code, date = '2019-12-31') {
-  const scawler = require('../../lib/scawler')
-  const res = await scawler.getJson(
+  const crawler = require('../../lib/crawler')
+  const res = await crawler.getJson(
     `http://data.eastmoney.com/DataCenter_V3/gdfx/stockholder.ashx?code=${code}&date=${date}&type=Sd`,
     'gb2312'
   )

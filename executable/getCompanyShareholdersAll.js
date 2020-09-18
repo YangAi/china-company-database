@@ -1,10 +1,10 @@
-const targetDate = '2019-12-31';
+const targetDate = '2018-12-31';
 
 (
   async () => {
-    const collectShareholders = require('../scawler/company/shareholder')
+    const collectShareholders = require('../crawler/company/shareholder')
     const $db = require('../lib/mongoose')
-    const { sleep } = require('../lib/scawler')
+    const { sleep } = require('../lib/crawler')
     const _ = require('lodash')
 
     const companies = await $db.company.find().exec()
