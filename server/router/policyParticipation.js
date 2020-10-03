@@ -41,7 +41,7 @@ module.exports = function (app) {
   app.get('/api/policy-participation/:id', async (req, res, next) => {
     const participation = await $db.policyParticipation.findById(req.params.id).select('-rawData')
     const user = await getUser(req.headers.authorization)
-    console.log(participation.questions)
+    console.log(participation)
     for (const key in participation.questions) {
       participation.questions[key] =
         participation.questions[key][user.nameCamel] ||

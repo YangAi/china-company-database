@@ -49,7 +49,8 @@ async function importData (data) {
   } else {
     console.log('Updating Bundle')
     if (intersectionWith(bundleExists.hits, hits, isEqual).length * 2 > hits.length) {
-      throw new Error('Duplicate Data')
+      console.log('Duplicate Data')
+      return
     } else {
       bundleExists.hits = [...bundleExists.hits, ...hits]
       bundleExists.searchId.push(searchId)
@@ -62,30 +63,35 @@ async function importData (data) {
 
   console.log('Bundle Updated')
 
-  const output = hits.map(hit => {
-    return {
-      bundleTitle,
-      bundleId,
-      key: hit.Source.Key,
-      type: hit.Source.NoticeType,
-      title: hit.Source.Title,
-      publishedAt: hit.Source.PublishDate,
-      stockCode: hit.Source.StockCode,
-      stockName: hit.Source.StockTicker,
-      industry: hit.Source.Industry,
-      parentIndustry: hit.Source.ParentIndustry,
-      documentUrl: hit.Source.Url,
-      filter: data.HighlightFilters,
-      content: hit.Highlight.Content,
-      rawData: hit,
-      questions: {
-        hasFunding: {},
-        specificProject: {},
-        matchIndustry: {},
-        degreeOfConfidence: {},
-        comments: {}
-      }
-    }
+  const output = []
+
+  hits.forEach(hit => {
+    hit.Highlight.Content.forEach(content => {
+      output.push({
+        bundleTitle,
+        bundleId,
+        key: hit.Source.Key,
+        type: hit.Source.NoticeType,
+        title: hit.Source.Title,
+        publishedAt: hit.Source.PublishDate,
+        stockCode: hit.Source.StockCode,
+        stockName: hit.Source.StockTicker,
+        industry: hit.Source.Industry,
+        parentIndustry: hit.Source.ParentIndustry,
+        documentUrl: hit.Source.Url,
+        filter: data.HighlightFilters,
+        content: content,
+        rawData: hit,
+        questions: {
+          hasFunding: {},
+          specificProject: {},
+          matchIndustry: {},
+          degreeOfConfidence: {},
+          specificPerson: {},
+          comments: {}
+        }
+      })
+    })
   })
 
   await $db.policyParticipation.insertMany(output, (err, res) => {
@@ -105,6 +111,7 @@ async function importData (data) {
         const data = require(folder + '/' + file)
         await importData(data)
       }
+      console.log('Done!')
     })
   }
 )()

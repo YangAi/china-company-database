@@ -23,7 +23,7 @@
         </v-navigation-drawer>
 
         <v-app-bar
-            app flat
+            app flat class="tw-border-b tw-border-gray-100"
         >
           <v-app-bar-nav-icon @click.stop="show.drawer = !show.drawer"></v-app-bar-nav-icon>
 <!--          <v-toolbar-title>{{ $route.meta.title || $config.appName }}</v-toolbar-title>-->

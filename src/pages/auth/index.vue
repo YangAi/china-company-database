@@ -15,7 +15,7 @@
             <v-form @submit="userLogin">
               <v-text-field outlined v-model="form.login.email" label="Email" />
               <v-text-field outlined v-model="form.login.password" label="Password" type="password" />
-              <v-btn block large elevation="4" color="primary" @click="userLogin">Login</v-btn>
+              <v-btn block large :loading="loading" elevation="8" color="primary" @click="userLogin">Login</v-btn>
             </v-form>
           </v-tab-item>
           <v-tab-item key="signUp">
@@ -24,7 +24,7 @@
               <v-text-field outlined v-model="form.signUp.password" label="Password" type="password" />
               <v-text-field outlined v-model="form.signUp.name" label="Name" />
               <v-text-field outlined v-model="form.signUp.invitationCode" label="Invitation Code" />
-              <v-btn block large elevation="4" color="primary" @click="userSignUp">Sign Up</v-btn>
+              <v-btn block large :loading="loading" elevation="8" color="primary" @click="userSignUp">Sign Up</v-btn>
             </v-form>
           </v-tab-item>
         </v-tabs-items>
@@ -40,6 +40,7 @@ export default {
   },
   data () {
     return {
+      loading: false,
       active: {
         tab: 'login'
       },
@@ -59,6 +60,7 @@ export default {
   },
   methods: {
     async userLogin () {
+      this.loading = true
       try {
         const res = await this.$api.session.store(this.form.login)
         if (res.success) {
@@ -67,10 +69,13 @@ export default {
           await this.$router.push('/')
         }
       } catch (e) {
+        this.$toast.error(e.message)
         console.error(e)
       }
+      this.loading = false
     },
     async userSignUp () {
+      this.loading = true
       try {
         const res = await this.$api.account.store(this.form.signUp)
         if (res.success) {
@@ -78,8 +83,10 @@ export default {
           await this.$router.go(0)
         }
       } catch (e) {
+        this.$toast.error(e.message)
         console.error(e)
       }
+      this.loading = false
     }
   }
 }

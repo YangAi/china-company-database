@@ -9,7 +9,7 @@
                       :value="item.value || item"
                       class="tw-inline-block tw-mt-0 tw--mr-2 tw-ml-auto tw-w-auto"
           />
-          <span v-else v-html="item.value || item" />
+          <span v-else class="tw-whitespace-no-wrap" v-html="item.value || item" />
         </td>
       </tr>
     </tbody>

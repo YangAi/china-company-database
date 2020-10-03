@@ -1,13 +1,15 @@
 <template>
     <div>
       <v-container>
-        <h1 class="text-h1">Policy Participation</h1>
+        <h1 class="text-h2">Policy Participation</h1>
       </v-container>
       <v-container>
         <v-divider class="tw-w-24 tw-border-4" />
       </v-container>
       <v-container>
-        <v-card v-for="item in list" :key="item._id" :to="'/policy-participation/bundles/' + item._id" class="tw-mb-4">
+        <v-text-field solo v-model="search" label="Search Policy Plan..." />
+
+        <v-card v-for="item in filteredList" :key="item._id" :to="'/policy-participation/bundles/' + item._id" class="tw-mb-4">
           <v-card-title>
             {{ item.title }}
             <v-spacer />
@@ -19,7 +21,7 @@
             <v-progress-linear :value="getProgress(item)" min="1" max="100" />
           </v-container>
           <v-container>
-            <data-list :value="_.pick(item, ['totalCount', 'companyCount', 'availableCount', 'updatedAt'])" />
+            <data-list :value="_.pick(item, ['totalCount', 'companyCount', 'updatedAt'])" />
           </v-container>
         </v-card>
       </v-container>
@@ -37,9 +39,18 @@ export default {
       this.list = res.data
     }
   },
+  computed: {
+    filteredList () {
+      if (!this.search) return this.list
+      return this.list.filter((item) => {
+        return item.title.includes(this.search)
+      })
+    }
+  },
   data () {
     return {
-      list: []
+      list: [],
+      search: ''
     }
   },
   methods: {

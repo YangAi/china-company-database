@@ -5,11 +5,11 @@
     const { sleep } = require('../lib/crawler')
     const _ = require('lodash')
 
-    const companies = await $db.company.find().sort('code').select('code stockName').exec()
+    const companies = await $db.company.find({ code: { $gte: '300247' } }).sort('code').select('code stockName').exec()
 
     for (const company of companies) {
       console.log(company.stockName, company.code)
-      await sleep(1000)
+      await sleep(100)
       const output = await getCompanyBasic(company.code)
 
       const resCompany = await $db.company.updateOne({ _id: company._id }, output.company)
@@ -18,7 +18,8 @@
       for (const item of output.people) {
         item.stockCode = company.code
         item.stockName = company.stockName
-        const resPeople = await $db.people.updateOne({ code: item.stockCode, name: item.name }, item, { upsert: true })
+        console.log(item)
+        const resPeople = await $db.people.updateOne({ stockCode: item.stockCode, name: item.name }, item, { upsert: true })
         if (!resPeople) console.warn(item.name, '人员更新失败')
       }
       console.log('finished')

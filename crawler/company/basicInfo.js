@@ -5,6 +5,22 @@ function is13NPCMember (name, province) {
   return !!npcList.find(item => item.name === name && province.includes(item.province))
 }
 
+function convertValue (value) {
+  let output = value
+  value = value.trim()
+
+  if (value === '--' || value === '-' || !value) {
+    output = 0
+  }
+  if (value.includes('万')) {
+    output = value.replace('万', '') * 10000
+  }
+  if (value.includes('亿')) {
+    output = value.replace('亿', '') * 10000 * 10000
+  }
+  return Math.round(output) || 0
+}
+
 async function getCompanyProfile (stockId) {
   const output = {}
   const $ = await crawler.getDom(`http://basic.10jqka.com.cn/${stockId}/company.html#stockpage`, 'gbk')
@@ -43,20 +59,24 @@ async function getCompanyProfile (stockId) {
         .text()
         .replace(/\t/g, '').replace(/\n/g, '').replace(/ /g, '')
 
-      const infoGroup = $(this).find('tr:nth-child(2) .intro').text().split('  ')
+      const infos = $(this).find('tr:nth-child(2) .intro').text()
+      console.log(infos)
+      const gender = infos.includes('女') ? '女' : (infos.includes('男') ? '男' : '')
+      const infoGroup = infos.replace('男', '').replace('女', '')
+      const lastUpdated = $(this).find('tbody tr:first-child p:last-child').text()
       const personInfo = {
         group: group[i],
         name: personName,
-        title: $(this).find('.jobs').text(),
-        isMale: infoGroup[0] === '男',
+        title: $(this).find('.jobs').text().trim(),
+        gender,
         isCCPMember: $(this).find('tbody tr:first-child p:first-child').text().includes('党员'),
         is13NPCMember: is13NPCMember(personName, output.province),
-        age: infoGroup[1] ? infoGroup[1].slice(0, -1) : null,
-        degree: infoGroup[2],
-        salary: $(this).find('.salary').children().remove().end().text(),
-        stockAmount: $(this).find('tr:nth-child(2) td:last-child span:last-child').text(),
-        description: $(this).find('tbody tr:first-child p:first-child').text(),
-        lastUpdated: $(this).find('tbody tr:first-child p:last-child').text().replace('此简介更新于', '')
+        age: infoGroup.substring(0, infoGroup.indexOf('岁')) || null,
+        degree: infoGroup.substring(infoGroup.indexOf('岁') + 1),
+        salary: convertValue($(this).find('.salary').children().remove().end().text()),
+        stockAmount: convertValue($(this).find('tr:nth-child(2) td:last-child span:last-child').text()),
+        description: $(this).find('tbody tr:first-child p:first-child').text().trim(),
+        lastUpdated: lastUpdated.includes('此简介更新于') ? lastUpdated.replace('此简介更新于', '') : null
       }
       people.push(personInfo)
     })
