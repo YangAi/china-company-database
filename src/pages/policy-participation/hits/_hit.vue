@@ -34,7 +34,7 @@
       </v-container>
       <v-container>
         <v-row>
-          <v-col :cols="7">
+          <v-col :cols="12" :md="7">
             <v-sheet outlined>
               <v-subheader class="tw-mb-4">Questions</v-subheader>
               <v-container>
@@ -44,10 +44,10 @@
                   <v-checkbox v-model="questions.matchIndustry" :label="`2. 与${hit.parentIndustry} / ${hit.industry}有关`" />
                   <v-btn @click="addFunding" outlined class="tw-mb-4">3. Add Specific Funding</v-btn>
                   <v-row dense v-for="(item, index) in questions.hasFunding" :key="index">
-                    <v-col :cols="5">
+                    <v-col :cols="12" :md="5">
                       <v-select dense label="Type" :items="fundOptions" v-model="item.type" />
                     </v-col>
-                    <v-col :cols="6">
+                    <v-col :cols="11" :md="6">
                       <v-text-field v-model="item.amount"
                                     type="number" dense
                                     :hint="parseInt(item.amount || '').toLocaleString() + ' RMB'"
@@ -67,7 +67,7 @@
               </v-container>
             </v-sheet>
           </v-col>
-          <v-col :cols="5">
+          <v-col :cols="12" :md="5">
             <v-sheet>
               <data-list :value="_.pick(hit, ['stockName', 'stockCode', 'parentIndustry', 'industry'])" />
             </v-sheet>
