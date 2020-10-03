@@ -61,7 +61,7 @@
                   </v-row>
                   <v-text-field outlined dense v-model="questions.specificPerson" label="4. Relate to a person?" />
                   <v-textarea v-model="questions.comments" outlined label="Comments" :rows="3" />
-                  <v-rating label="4. Level of confidence" :length="3" v-model="questions.degreeOfConfidence" />
+                  <v-rating label="4. Level of confidence" :length="3" v-model="questions.degreeOfConfidence" class="tw-text-center" />
                   <v-btn v-if="questions.degreeOfConfidence > 0" block color="primary" @click="submit" :loading="loading">Submit</v-btn>
                 </v-form>
               </v-container>
