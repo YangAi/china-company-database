@@ -54,8 +54,8 @@
                                     suffix="RMB" @change="onFundingChange" />
                     </v-col>
                     <v-col :cols="1">
-                      <v-btn icon @click="removeFunding(index)">
-                        <v-icon>mdi-close</v-icon>
+                      <v-btn small icon @click="removeFunding(index)">
+                        <v-icon small>mdi-close</v-icon>
                       </v-btn>
                     </v-col>
                   </v-row>
