@@ -39,13 +39,15 @@
               <v-subheader class="tw-mb-4">Questions</v-subheader>
               <v-container>
                 <v-form dense>
+                  <v-checkbox v-model="questions.isIncomplete" label="Incomplete Data" class="tw-mt-0" />
+                  <v-textarea v-if="questions.isIncomplete" v-model="hit.citation" outlined label="Citation" :rows="3" />
                   <v-checkbox v-model="specificProject" label="1. Reference to specific projects？ 能够联系到具体项目" class="mt-0" />
                   <v-text-field outlined hide-details v-if="specificProject" dense v-model="questions.specificProject" label="Project Name" />
                   <v-checkbox v-model="questions.matchIndustry" :label="`2. 与${hit.parentIndustry} / ${hit.industry}有关`" />
                   <v-btn @click="addFunding" outlined class="tw-mb-4">3. Add Specific Funding</v-btn>
                   <v-row dense v-for="(item, index) in questions.hasFunding" :key="index">
                     <v-col :cols="12" :md="5">
-                      <v-select dense label="Type" :items="fundOptions" v-model="item.type" />
+                      <v-combobox dense label="Type" :items="fundOptions" v-model="item.type" />
                     </v-col>
                     <v-col :cols="11" :md="6">
                       <v-text-field v-model="item.amount"
@@ -60,7 +62,7 @@
                     </v-col>
                   </v-row>
                   <v-text-field outlined dense v-model="questions.specificPerson" label="4. Relate to a person?" />
-                  <v-textarea v-model="questions.comments" outlined label="Comments" :rows="3" />
+                  <v-textarea v-model="hit.comment" outlined label="Comment" :rows="3" />
                   <v-rating label="4. Level of confidence" :length="3" v-model="questions.degreeOfConfidence" class="tw-text-center" />
                   <v-btn v-if="questions.degreeOfConfidence > 0" block color="primary" @click="submit" :loading="loading">Submit</v-btn>
                 </v-form>
@@ -75,7 +77,7 @@
               <v-subheader>Actions</v-subheader>
               <v-list>
                 <v-list-item :href="'http://vip.stock.finance.sina.com.cn/corp/go.php/vCB_Bulletin/stockid/' + hit.stockCode + '/page_type/ndbg.phtml'" target="_blank">
-                  <v-list-item-title>Download Document</v-list-item-title>
+                  <v-list-item-title>Open {{ hit.type }}</v-list-item-title>
                   <v-list-item-action>
                     <v-icon>mdi-arrow-right</v-icon>
                   </v-list-item-action>
@@ -135,13 +137,14 @@ export default {
         specificProject: false,
         matchIndustry: false,
         degreeOfConfidence: undefined,
-        comments: ''
+        isIncomplete: false
       },
       fundOptions: [
         '起初金额',
         '本期金额',
         '期末金额',
-        '上期金额'
+        '上期金额',
+        '总金额'
       ]
     }
   },
@@ -188,6 +191,8 @@ export default {
       this.loading = true
       if (!this.specificProject) this.questions.specificProject = false
       const res = await this.$api.policyParticipation.put(this.$route.params.hit, {
+        citation: this.hit.citation,
+        comment: this.hit.comment,
         questions: this.questions
       })
       this.loading = false

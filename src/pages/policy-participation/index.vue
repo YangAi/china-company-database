@@ -21,7 +21,7 @@
             <v-progress-linear :value="getProgress(item)" min="1" max="100" />
           </v-container>
           <v-container>
-            <data-list :value="_.pick(item, ['totalCount', 'companyCount', 'updatedAt'])" />
+            <data-list :value="_.pick(item, ['actualCount', 'companyCount', 'updatedAt'])" />
           </v-container>
         </v-card>
       </v-container>

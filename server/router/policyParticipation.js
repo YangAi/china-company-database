@@ -9,7 +9,7 @@ module.exports = function (app) {
     if (req.query.full) {
       output = await $db.policyParticipationBundle.find()
     } else {
-      output = await $db.policyParticipationBundle.find().select('-rawData -hits -aggregations')
+      output = await $db.policyParticipationBundle.find().select('-rawData -hits -aggregations').sort({ actualCount: -1 })
     }
     res.send(apiResponse(output))
   })
@@ -61,6 +61,8 @@ module.exports = function (app) {
       await $db.policyParticipationBundle.updateOne({ _id: participation.bundleId }, bundle)
 
       // save answers
+      participation.citation = req.body.citation
+      participation.comment = req.body.comment
       for (const key in req.body.questions) {
         console.log(key, participation)
         participation.questions[key][user.nameCamel] = req.body.questions[key]

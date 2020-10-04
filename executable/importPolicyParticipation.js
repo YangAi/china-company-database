@@ -82,13 +82,15 @@ async function importData (data) {
         filter: data.HighlightFilters,
         content: content,
         rawData: hit,
+        comment: '',
+        citation: '',
         questions: {
           hasFunding: {},
           specificProject: {},
           matchIndustry: {},
           degreeOfConfidence: {},
           specificPerson: {},
-          comments: {}
+          isIncomplete: {}
         }
       })
     })
@@ -97,21 +99,38 @@ async function importData (data) {
   await $db.policyParticipation.insertMany(output, (err, res) => {
     if (err) console.log(err)
   })
+
+  await $db.policyParticipationBundle.updateOne({ _id: bundleId }, {
+    actualCount: output.length
+  })
   console.log('Finished inserting')
 }
 
+// (
+//   async () => {
+//     const folder = '../data/plan'
+//     const fs = require('fs')
+//
+//     fs.readdir(folder, async (err, files) => {
+//       for (const file of files) {
+//         console.log(file)
+//         const data = require(folder + '/' + file)
+//         await importData(data)
+//       }
+//       console.log('Done!')
+//     })
+//   }
+// )()
+
 (
   async () => {
-    const folder = '../data/plan'
-    const fs = require('fs')
-
-    fs.readdir(folder, async (err, files) => {
-      for (const file of files) {
-        console.log(file)
-        const data = require(folder + '/' + file)
-        await importData(data)
-      }
-      console.log('Done!')
-    })
+    const $db = require('../lib/mongoose')
+    const list = await $db.policyParticipationBundle.find()
+    for (const bundle of list) {
+      const item = await $db.policyParticipation.find({ bundleId: bundle._id })
+      await $db.policyParticipationBundle.updateOne({ _id: bundle._id }, {
+        actualCount: item.length
+      })
+    }
   }
-)()
+) ()

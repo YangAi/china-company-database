@@ -20,22 +20,6 @@ require('./router/accounts')(app)
 require('./router/sessions')(app)
 require('./router/policyParticipation')(app)
 
-// app.get('/api/policy-participation/', async (req, res, next) => {
-//   const participations = await $db.policyParticipation.find()
-//   res.send(participations)
-// })
-
-
-
-app.get('/api/policy-participation/:id/previous', async (req, res, next) => {
-  const participation = await $db.policyParticipation.find({ _id: { $gt: req.params.id } }).sort({ _id: -1 }).limit(1)
-  res.send(participation)
-})
-
-app.get('/api/policy-participation/:id/next', async (req, res, next) => {
-  const participation = await $db.policyParticipation.find({ _id: { $gt: req.params.id } }).sort({ _id: 1 }).limit(1)
-  res.send(participation)
-})
 app.use(handleError)
 
 const port = process.env.PORT || 8000
