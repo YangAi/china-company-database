@@ -12,6 +12,7 @@
       </v-container>
       <v-container>
         <v-btn outlined x-large
+               :loading="loading"
                v-if="!this.bundle.taskCompleted"
                @click="initializeTask">Initialize 初始化</v-btn>
         <v-btn outlined x-large
@@ -36,6 +37,7 @@ export default {
   components: { DataList },
   async created () {
     const res = await this.$store.dispatch('policyParticipation/setCurrent')
+    this.loading = false
     if (!res) {
       this.$router.push('/policy-participation')
       this.$toast.error('Data not exist')
@@ -43,6 +45,7 @@ export default {
   },
   data () {
     return {
+      loading: true,
       search: ''
     }
   },
@@ -82,6 +85,8 @@ export default {
   },
   methods: {
     async initializeTask () {
+      this.loading = true
+      this.$toast.info('This might take a while')
       const res = await this.$api.policyParticipationBundle.put(`${this.$route.params.bundle}/initialize`)
       console.log(res)
       if (res.success) {
