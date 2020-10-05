@@ -18,6 +18,7 @@ app.use('/', serveStatic(path.join(__dirname, '../dist')))
 
 require('./router/accounts')(app)
 require('./router/sessions')(app)
+require('./router/companies')(app)
 require('./router/policyParticipation')(app)
 
 app.use(handleError)
