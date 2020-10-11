@@ -123,6 +123,7 @@ export default {
       if (!this.hit.title.includes('2019')) {
         this.loading = true
         this.$toast.error('This data is not from 2019 annual report.')
+        this.questions.degreeOfConfidence = -1
         setTimeout(() => {
           this.submit()
         }, 300)
