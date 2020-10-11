@@ -42,7 +42,7 @@
                   <v-textarea v-if="questions.isIncomplete" v-model="hit.citation" outlined dense label="Citation" :rows="3" />
                   <v-checkbox v-model="specificProject" label="1. Reference to specific projects？ 能够联系到具体项目" class="mt-0" />
                   <v-text-field outlined hide-details v-if="specificProject" dense v-model="questions.specificProject" label="Project Name" />
-                  <v-checkbox v-model="questions.matchIndustry" :label="`2. 与${hit.parentIndustry} / ${hit.industry}有关`" />
+<!--                  <v-checkbox v-model="questions.matchIndustry" :label="`2. 与${hit.parentIndustry} / ${hit.industry}有关`" />-->
                   <v-btn @click="addFunding" outlined class="tw-mb-4">2. Add Specific Funding</v-btn>
                   <v-row dense v-for="(item, index) in questions.hasFunding" :key="index">
                     <v-col :cols="12" :md="5">
