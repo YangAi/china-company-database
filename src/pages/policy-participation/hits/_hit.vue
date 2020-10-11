@@ -118,6 +118,15 @@ export default {
         this.questions[key] = this.hit.questions[key]
       }
 
+      // Skip non 2019 data
+      if (!this.hit.title.includes('2019')) {
+        this.loading = true
+        this.$toast.error('This data is not from 2019 annual report.')
+        setTimeout(() => {
+          this.submit()
+        }, 300)
+      }
+
       // load company
       const resCompany = await this.$api.company.find(this.hit.stockCode)
       if (resCompany.success) {

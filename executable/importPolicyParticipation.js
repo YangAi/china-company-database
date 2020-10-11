@@ -67,32 +67,35 @@ async function importData (data) {
 
   hits.forEach(hit => {
     hit.Highlight.Content.forEach(content => {
-      output.push({
-        bundleTitle,
-        bundleId,
-        key: hit.Source.Key,
-        type: hit.Source.NoticeType,
-        title: hit.Source.Title,
-        publishedAt: hit.Source.PublishDate,
-        stockCode: hit.Source.StockCode,
-        stockName: hit.Source.StockTicker,
-        industry: hit.Source.Industry,
-        parentIndustry: hit.Source.ParentIndustry,
-        documentUrl: hit.Source.Url,
-        filter: data.HighlightFilters,
-        content: content,
-        rawData: hit,
-        comment: '',
-        citation: '',
-        questions: {
-          hasFunding: {},
-          specificProject: {},
-          matchIndustry: {},
-          degreeOfConfidence: {},
-          specificPerson: {},
-          isIncomplete: {}
-        }
-      })
+      if (hit.Source.Title.includes('2019')) {
+        output.push({
+          bundleTitle,
+          bundleId,
+          key: hit.Source.Key,
+          type: hit.Source.NoticeType,
+          title: hit.Source.Title,
+          publishedAt: hit.Source.PublishDate,
+          stockCode: hit.Source.StockCode,
+          stockName: hit.Source.StockTicker,
+          industry: hit.Source.Industry,
+          parentIndustry: hit.Source.ParentIndustry,
+          documentUrl: hit.Source.Url,
+          filter: data.HighlightFilters,
+          content: content,
+          rawData: hit,
+          comment: '',
+          citation: '',
+          questions: {
+            hasFunding: {},
+            specificProject: {},
+            matchIndustry: {},
+            degreeOfConfidence: {},
+            specificPerson: {},
+            isIncomplete: {}
+          }
+        })
+
+      }
     })
   })
 
@@ -122,15 +125,15 @@ async function importData (data) {
 //   }
 // )()
 
-(
-  async () => {
-    const $db = require('../lib/mongoose')
-    const list = await $db.policyParticipationBundle.find()
-    for (const bundle of list) {
-      const item = await $db.policyParticipation.find({ bundleId: bundle._id })
-      await $db.policyParticipationBundle.updateOne({ _id: bundle._id }, {
-        actualCount: item.length
-      })
-    }
-  }
-) ()
+// (
+//   async () => {
+//     const $db = require('../lib/mongoose')
+//     const list = await $db.policyParticipationBundle.find()
+//     for (const bundle of list) {
+//       const item = await $db.policyParticipation.find({ bundleId: bundle._id })
+//       await $db.policyParticipationBundle.updateOne({ _id: bundle._id }, {
+//         actualCount: item.length
+//       })
+//     }
+//   }
+// ) ()
