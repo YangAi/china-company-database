@@ -63,77 +63,55 @@ async function importData (data) {
 
   console.log('Bundle Updated')
 
-  const output = []
-
-  hits.forEach(hit => {
-    hit.Highlight.Content.forEach(content => {
-      if (hit.Source.Title.includes('2019')) {
-        output.push({
-          bundleTitle,
-          bundleId,
-          key: hit.Source.Key,
-          type: hit.Source.NoticeType,
-          title: hit.Source.Title,
-          publishedAt: hit.Source.PublishDate,
-          stockCode: hit.Source.StockCode,
-          stockName: hit.Source.StockTicker,
-          industry: hit.Source.Industry,
-          parentIndustry: hit.Source.ParentIndustry,
-          documentUrl: hit.Source.Url,
-          filter: data.HighlightFilters,
-          content: content,
-          rawData: hit,
-          comment: '',
-          citation: '',
-          questions: {
-            hasFunding: {},
-            specificProject: {},
-            matchIndustry: {},
-            degreeOfConfidence: {},
-            specificPerson: {},
-            isIncomplete: {}
-          }
-        })
-
+  const output = hits.map(hit => {
+    if (hit.Source.Title.includes('2019')) {
+      return {
+        bundleTitle,
+        bundleId,
+        key: hit.Source.Key,
+        type: hit.Source.NoticeType,
+        title: hit.Source.Title,
+        publishedAt: hit.Source.PublishDate,
+        stockCode: hit.Source.StockCode,
+        stockName: hit.Source.StockTicker,
+        industry: hit.Source.Industry,
+        parentIndustry: hit.Source.ParentIndustry,
+        documentUrl: hit.Source.Url,
+        filter: data.HighlightFilters,
+        content: hit.Highlight.Content,
+        rawData: hit,
+        questions: {
+          hasFunding: {},
+          specificProject: {},
+          matchIndustry: {},
+          degreeOfConfidence: {},
+          comments: {}
+        }
       }
-    })
+    }
   })
 
   await $db.policyParticipation.insertMany(output, (err, res) => {
     if (err) console.log(err)
   })
 
-  await $db.policyParticipationBundle.updateOne({ _id: bundleId }, {
-    actualCount: output.length
-  })
   console.log('Finished inserting')
 }
 
-// (
-//   async () => {
-//     const folder = '../data/plan'
-//     const fs = require('fs')
-//
-//     fs.readdir(folder, async (err, files) => {
-//       for (const file of files) {
-//         console.log(file)
-//         const data = require(folder + '/' + file)
-//         await importData(data)
-//       }
-//       console.log('Done!')
-//     })
-//   }
-// )()
+(
+  async () => {
+    const folder = '../data/plan'
+    const fs = require('fs')
 
-// (
-//   async () => {
-//     const $db = require('../lib/mongoose')
-//     const list = await $db.policyParticipationBundle.find()
-//     for (const bundle of list) {
-//       const item = await $db.policyParticipation.find({ bundleId: bundle._id })
-//       await $db.policyParticipationBundle.updateOne({ _id: bundle._id }, {
-//         actualCount: item.length
-//       })
-//     }
-//   }
-// ) ()
+    fs.readdir(folder, async (err, files) => {
+      for (const file of files) {
+        console.log(file)
+        const data = require(folder + '/' + file)
+        await importData(data)
+      }
+      console.log('Done!')
+    })
+  }
+)()
+
+

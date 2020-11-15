@@ -20,6 +20,7 @@ require('./router/accounts')(app)
 require('./router/sessions')(app)
 require('./router/companies')(app)
 require('./router/policyParticipation')(app)
+require('./router/people')(app)
 
 app.use(handleError)
 

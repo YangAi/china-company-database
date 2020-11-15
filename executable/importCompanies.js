@@ -15,7 +15,7 @@
 (
   async () => {
     const $db = require('../lib/mongoose')
-    const res = await $db.company.deleteMany({ shareholders: undefined })
+    const res = await $db.company.deleteMany({ code: undefined })
     console.log(res)
   }
 )()

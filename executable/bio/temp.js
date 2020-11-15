@@ -1,0 +1,15 @@
+(async () => {
+  // const $db = require('../../lib/mongoose')
+  // const people = await $db.people.find().limit(1000)
+  const csv = require('csvtojson')
+  const _ = require('lodash')
+  const fs = require('fs')
+  const ToCSV = require('objects-to-csv')
+
+  const uniList = await csv().fromFile('./uniList.csv')
+  const uniqueList = _.uniqBy(uniList, 'name')
+  console.log(uniList)
+  const toCsv = new ToCSV(uniqueList)
+  const result = await toCsv.toDisk('./uniList.csv')
+  console.log(result)
+})()

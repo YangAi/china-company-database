@@ -1,15 +1,20 @@
 (
   async () => {
+    const questions = [
+      'datahasFunding',
+      'matchIndustry',
+      'degreeOfConfidence',
+      'specificPerson',
+      'isIncomplete']
     const $db = require('../lib/mongoose')
-    const companies = await $db.company.find().select('industry')
-    for (const company of companies) {
-      const arr = company.industry.split(' — ')
-      console.log(arr)
-      const output = {
-        industry: arr[0],
-        subIndustry: arr[1]
+    const data = await $db.policyParticipation.find({ bundleTitle: '泰山学者' })
+    for (const item of data) {
+      console.log(item.citation)
+      for (const question in item.questions) {
+        if (questions.includes(question)) {
+          console.log(question, item.questions[question])
+        }
       }
-      await $db.company.updateOne({ _id: company._id }, output)
     }
   }
 )()
