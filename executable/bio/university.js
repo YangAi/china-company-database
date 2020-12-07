@@ -11,6 +11,9 @@
   const degreeList = ['本科', '学士', '研究生', '硕士', '博士', '博士后', '荣誉博士']
   const positionList = ['教授', '研究员', '院长', '校长', '导师', '团委书记', '党委书记', '访问学者', '讲师', '教员']
   const mbaList = ['MBA', '管理学', '工商管理', '总裁项目', 'CEO']
+
+  const outputTemp = []
+
   for (const person of people) {
     // console.log(person.description)
     // Match Every Sentence
@@ -44,6 +47,7 @@
             sentence,
             uniName: uni.name,
             personId: person._id,
+            highestDegree: person.degree,
             personName: person.name,
             stockCode: person.stockCode,
             degrees,
@@ -57,11 +61,16 @@
 
       // // broad keyword check
       // const matchingKeywords = [
-      //   '诺丁汉大学'
+      //   '大学'
       // ]
       // for (const keyword of matchingKeywords) {
       //   if (_.isEqual(universitiesMatch, [keyword])) {
-      //     console.log(universitiesMatch, person.name, person.stockCode, sentence)
+      //     // console.log(universitiesMatch, person.name, person.stockCode, sentence)
+      //     outputTemp.push({
+      //       name: person.name,
+      //       code: person.stockCode,
+      //       sentence
+      //     })
       //   }
       // }
 
@@ -78,6 +87,13 @@
       // }
     }
   }
+
+  // Export unrecognized keyword
+  // console.log(outputTemp)
+  // const ToCSV = require('objects-to-csv')
+  // const csvFile = new ToCSV(outputTemp)
+  // const result = await csvFile.toDisk('./tasks/findUniversities.csv')
+
   console.log('Total:', targets.length)
   let perfectMatch = 0
   for (const target of targets) {
@@ -86,7 +102,8 @@
     }
   }
   console.log('Perfect Match:', perfectMatch)
-  // await $db.bioTemp.insertMany(targets)
+  // console.log(targets)
+  await $db.bioTemp.insertMany(targets)
   console.timeEnd('Process')
   console.log('--------------------------------Finished')
   process.exit(0)
