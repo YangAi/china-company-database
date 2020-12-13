@@ -7,7 +7,7 @@
     for (const bundle of bundles) {
       const bundleTitle = bundle.title
       console.log(bundleTitle)
-      const path = `../data/policyParticipationForExcel/${bundleTitle}.csv`
+      const path = `../data/policyParticipationForExcelAutomate/${bundleTitle}.csv`
 
       const res = await $db.policyParticipation.find({ bundleTitle })
       const ToCSV = require('objects-to-csv')
@@ -35,12 +35,7 @@
             provinces: company?.province || '',
             actualControllerType: company?.actualControllerType || '无实际控制人',
             link: 'http://vip.stock.finance.sina.com.cn/corp/go.php/vCB_Bulletin/stockid/' + code + '/page_type/ndbg.phtml',
-            policyMention1: '',
-            amountMention1: '',
-            policyMention2: '',
-            amountMention2: '',
-            policyMention3: '',
-            amountMention3: '',
+            amountMention: '',
             natureOfCompanyInvolvement: '',
             otherComments: ''
           })
