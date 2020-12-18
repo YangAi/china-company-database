@@ -11,12 +11,15 @@
     const problematicData = []
 
     for (const recordIndex in original) {
+      // check duplicate data
       const exists = output.findAll({
         stockCode: original[recordIndex].stockCode
       })
       if (!_.isEmpty(exists)) {
         continue
       }
+
+      // start data collection
       await crawler.sleep(1000)
       const $$ = await crawler.getDom(original[recordIndex].link, 'gb2312')
       const url = 'https://vip.stock.finance.sina.com.cn/' + $$('.datelist ul a:first-child').attr('href')
@@ -35,7 +38,7 @@
           description: 'Missing content'
         })
       }
-
+      // find table of content
       $('#content>*').each(function (index) {
         const text = $(this).text()
         content.push(text)
@@ -50,6 +53,8 @@
         item.text = _.trim(item.text.split('......')[0])
         return item
       })
+
+      // find location of each section
       for (const i in content) {
         for (const toc of tocs) {
           if (i - toc.index === 0) continue
@@ -64,6 +69,7 @@
       console.log(sections)
       console.log(tocs)
       let sectionIndex = []
+      // toc quality check
       if (tocs.length === 0) {
         problematicData.push({
           url,
@@ -72,8 +78,8 @@
         })
       }
       if (tocs.length !== sections.length) {
-        console.log('tocs', tocs.length)
-        console.log('section', sections.length)
+        // console.log('tocs', tocs.length)
+        // console.log('section', sections.length)
         console.error('Section Title Amount does not match.')
         problematicData.push({
           url,
@@ -81,7 +87,7 @@
           description: 'Section Title Amount does not match.'
         })
       } else if (tocs.length !== _.uniqBy(sections, 'text').length) {
-        console.log(tocs)
+        // console.log(tocs)
         console.error('Duplicate Section Title.')
         problematicData.push({
           url,
@@ -93,6 +99,8 @@
           return item.index
         })
       }
+
+      // collect data
       for (let i in content) {
         i = parseInt(i)
         if (content[i].includes(keyword)) {
