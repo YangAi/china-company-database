@@ -1,6 +1,6 @@
 (
   async () => {
-    const keyword = '一带一路'
+    const keyword = '国家自然科学基金'
     const path = `../../data/policyParticipationForExcelAutomate/${keyword}.csv`
     const _ = require('lodash')
     const Crawler = require('../../class/Crawler')
@@ -26,6 +26,7 @@
       const sections = []
       const $ = await crawler.getDom(url, 'gb2312')
 
+      // <pre> tag
       if ($('#content>*').text().length < 1000) {
         console.error('missing content')
         problematicData.push({
@@ -60,6 +61,8 @@
           }
         }
       }
+      console.log(sections)
+      console.log(tocs)
       let sectionIndex = []
       if (tocs.length === 0) {
         problematicData.push({
@@ -69,7 +72,8 @@
         })
       }
       if (tocs.length !== sections.length) {
-        console.log(tocs)
+        console.log('tocs', tocs.length)
+        console.log('section', sections.length)
         console.error('Section Title Amount does not match.')
         problematicData.push({
           url,

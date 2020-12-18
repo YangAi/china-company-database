@@ -25,7 +25,7 @@
 
     console.time('Loading database')
     const $db = require('../../../lib/mongoose')
-    const people = await $db.people.find()
+    const people = await $db.people.find().limit(500)
     console.timeEnd('Loading database')
     console.time('Process')
 
@@ -69,7 +69,7 @@
         outputItem.companyName = person.stockName
         outputItem.personTitle = person.title
 
-        output.push(outputItem)
+        // output.push(outputItem)
 
         if (_.isEmpty(outputItem.organizations) && outputItem.jobRelated > 0) {
           // console.log(person.name)
@@ -82,6 +82,10 @@
           // console.log(outputItem)
           count[2]++
           // console.log(sentence.content)
+        }
+
+        if (outputItem.isGeneralMatch) {
+          console.log(outputItem.personDescription)
         }
       }
 

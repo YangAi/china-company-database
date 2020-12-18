@@ -1,6 +1,6 @@
 const Csv = require('./Csv')
 const _ = require('lodash')
-// const fs = require('fs')
+const fs = require('fs')
 
 class CsvFile extends Csv {
   constructor (path) {
@@ -14,6 +14,9 @@ class CsvFile extends Csv {
   }
 
   static async load (path) {
+    if (!fs.existsSync(path)) {
+      fs.writeFileSync(path, '')
+    }
     const o = new CsvFile(path)
     await o.initialize()
     return o

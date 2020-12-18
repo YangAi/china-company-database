@@ -24,7 +24,7 @@
       doctor: ['博士', '博士研究生', '博士毕业于', '博士就读于'],
       postDoctor: ['博士后'],
       partTime: ['学术访问', '荣誉博士', '访学', '交换学者', '学者', '交流访问', '访问研究', '访问学者'],
-      general: ['学习', '毕业', '攻读', '读书', '就读', '学生', '学位', '毕业于']
+      general: ['学习', '毕业', '攻读', '读书', '就读', '学生', '学位', '毕业于', '就读于']
     }
     const positions = {
       academic: [
@@ -34,7 +34,7 @@
         '行政相关职位', '院长', '副院长', '校长', '副校长', '处长', '副处长', '科长', '副科长', '理事长', '校办秘书', '秘书长', '副秘书长', '董事', '工会主席', '部长', '副部长', '校董', '理事', '主任', '所长', '科员', '主席', '辅导员', '委员会委员', '干事', '主委', '副主委'
       ],
       party: [
-        '党政办公室主任', '党政办公室副主任', '团委书记', '党委书记', '党支部书记', '党总支书记', '党总支副书记', '党委', '团委', '团总支书记', '团总支副书记', '党务秘书', '团委副书记', '党委副书记', '支部书记'
+        '党政相关职位', '党政办公室主任', '党政办公室副主任', '团委书记', '党委书记', '党支部书记', '党总支书记', '党总支副书记', '党委', '团委', '团总支书记', '团总支副书记', '党务秘书', '团委副书记', '党委副书记', '支部书记'
       ],
       // company: [
       //   // '经理', '副经理', '总裁', '主编', '总经理', '董事长'
@@ -75,21 +75,22 @@
     const universityCsv = _.map(await CsvFile.from('./uniList.csv'), 'name')
     console.time('Loading database')
     const $db = require('../../../lib/mongoose')
-    const people = await $db.people.find()
+    const people = await $db.people.find().limit(2)
     console.timeEnd('Loading database')
     console.time('Process')
 
     for (const person of people) {
       const bio = new Bio(person)
-
       // Run through each sentence
       for (const sentenceText of bio.sentences()) {
+        console.log(sentenceText)
         const sentence = new Sentence(sentenceText)
 
         sentence.exclude(excludeKeywords)
         const universityMatch = _.sortBy(sentence.match(universityCsv), 'positionStart')
         const keywordsMatch = _.sortBy(sentence.match(detailList), 'positionStart')
-
+        console.log(universityMatch)
+        console.log(keywordsMatch)
         // 根据大学的字符串位置，拆分数据
         const universityMatchGroup = []
         // 相邻大学合并，距离小于3
@@ -263,7 +264,7 @@
 
     // const res = await CsvFile.to('./roughDataListForDan.csv', output)
 
-    await $db.bioTemp.insertMany(output)
+    // await $db.bioTemp.insertMany(output)
 
     console.log('People with University: ', universityCount[0])
     console.log('UniversityGroup Mention: ', universityCount[1])
