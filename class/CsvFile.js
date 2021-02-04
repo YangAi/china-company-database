@@ -10,7 +10,7 @@ class CsvFile extends Csv {
   }
 
   async initialize () {
-    this.list = await CsvFile.from(this.path)
+    this.list = await CsvFile.from(this.path, { checkType: true })
   }
 
   static async load (path) {
@@ -40,11 +40,11 @@ class CsvFile extends Csv {
 
   async push (item) {
     this.list.push(item)
-    return await CsvFile.to(this.path, this.list)
+    return CsvFile.to(this.path, this.list)
   }
 
   async remove (payload) {
-    const items = this.find(payload)
+    const items = this.findOne(payload)
     this.list = this.list.filter(item => {
       return !_.includes(items, item)
     })
@@ -57,6 +57,10 @@ class CsvFile extends Csv {
       return !_.includes(items, item)
     })
     return await CsvFile.to(this.path, this.list)
+  }
+
+  async reset () {
+    return fs.writeFileSync(this.path, '')
   }
 }
 

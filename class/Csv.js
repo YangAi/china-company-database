@@ -1,5 +1,6 @@
 const FromCSV = require('csvtojson')
 const ToCSV = require('objects-to-csv')
+const { map } = require('lodash')
 
 class Csv {
   constructor () {
@@ -7,8 +8,10 @@ class Csv {
     this.FoCSV = ToCSV
   }
 
-  static async from (path) {
-    return FromCSV().fromFile(path)
+  static async from (path, options, mapFunction = false) {
+    let output = await FromCSV(options).fromFile(path)
+    if (mapFunction) output = map(output, mapFunction)
+    return output
   }
 
   static async to (path, data) {

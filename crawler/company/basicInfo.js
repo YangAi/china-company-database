@@ -60,7 +60,6 @@ async function getCompanyProfile (stockId) {
         .replace(/\t/g, '').replace(/\n/g, '').replace(/ /g, '')
 
       const infos = $(this).find('tr:nth-child(2) .intro').text()
-      console.log(infos)
       const gender = infos.includes('女') ? '女' : (infos.includes('男') ? '男' : '')
       const infoGroup = infos.replace('男', '').replace('女', '')
       const lastUpdated = $(this).find('tbody tr:first-child p:last-child').text()

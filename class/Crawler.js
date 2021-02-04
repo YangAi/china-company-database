@@ -18,7 +18,7 @@ class Crawler {
 
   async get (url, encoded = false) {
     this.setHeader()
-    const res = await axios.get(url)
+    const res = await axios.get(encodeURI(url))
     let data = res.data
     if (encoded) {
       data = iconv.decode(data, encoded)
