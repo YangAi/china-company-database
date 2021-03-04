@@ -1,6 +1,6 @@
-const Csv = require('./Csv')
-const _ = require('lodash')
 const fs = require('fs')
+const _ = require('lodash')
+const Csv = require('./Csv')
 
 class CsvFile extends Csv {
   constructor (path) {
@@ -40,12 +40,12 @@ class CsvFile extends Csv {
 
   async push (item) {
     this.list.push(item)
-    return CsvFile.to(this.path, this.list)
+    return await CsvFile.to(this.path, this.list)
   }
 
   async remove (payload) {
     const items = this.findOne(payload)
-    this.list = this.list.filter(item => {
+    this.list = this.list.filter((item) => {
       return !_.includes(items, item)
     })
     return await CsvFile.to(this.path, this.list)
@@ -53,14 +53,18 @@ class CsvFile extends Csv {
 
   async removeAll (payload) {
     const items = this.findAll(payload)
-    this.list = this.list.filter(item => {
+    this.list = this.list.filter((item) => {
       return !_.includes(items, item)
     })
     return await CsvFile.to(this.path, this.list)
   }
 
-  async reset () {
+  reset () {
     return fs.writeFileSync(this.path, '')
+  }
+
+  async save () {
+    return await CsvFile.to(this.path, this.list)
   }
 }
 

@@ -1,6 +1,6 @@
 (
   async () => {
-    const year = 2018
+    const year = 2014
     const keyword = '一带一路'
     const path = `./导出0204/${keyword}（19年之前）_${year}.csv`
     const _ = require('lodash')
@@ -43,8 +43,10 @@
       const sections = []
       const $ = await crawler.getDom(url, 'gb2312')
       console.log('loaded')
-      // <pre> tag
-      if ($('#content>*').text().length < 1000) {
+      //
+      const sinaTitle = $('.tagmain thead').text().split('（')[0].trim()
+      const contentDom = $('#content>*')
+      if (contentDom.text().length < 1000) {
         console.error('missing content')
         problematicCsv.push({
           random,
@@ -55,7 +57,7 @@
         })
       }
       // find table of content
-      $('#content>*').each(function (index) {
+      contentDom.each(function (index) {
         const text = $(this).text()
         content.push(text.replace(',', '，').replace(/[\r\n\u0085\u2028\u2029]+/g, ' '))
         if (text.includes('......') && text.includes('节') && index < 100) {
@@ -95,7 +97,7 @@
         })
       }
       if (tocs.length !== sections.length) {
-        console.error('Section Title Amount does not match.')
+        // console.error('Section Title Amount does not match.')
         problematicCsv.push({
           random,
           url,
@@ -118,7 +120,6 @@
           return parseInt(item.index)
         })
       }
-
 
       // collect data
       for (let i in content) {
@@ -150,6 +151,7 @@
             }
             output = {
               ...original[recordIndex],
+              sinaTitle,
               section: section.text?.replace(/ /g, ''),
               location: i,
               length: content.length,
@@ -158,20 +160,28 @@
               mention: content[i],
               mentionNext: next
             }
+            await outputCsv.push(output)
           } else {
-            const position = content[i].indexOf(keyword)
-            output = {
-              ...original[recordIndex],
-              section: section.text?.replace(/ /g, ''),
-              location: i,
-              length: content.length,
-              docLink: url,
-              mentionPrevious: '',
-              mention: content[i].substring(position - 200, position + 200),
-              mentionNext: ''
+            const regex = new RegExp(keyword, 'gi')
+            let result = {}
+            let position = -200
+            while ((result = regex.exec(content[i]))) {
+              if (result.index - position < 200) { continue }
+              position = result.index
+              output = {
+                ...original[recordIndex],
+                sinaTitle,
+                section: section?.text?.replace(/ /g, ''),
+                location: i,
+                length: content.length,
+                docLink: url,
+                mentionPrevious: content[i].substring(position - 500, position - 200),
+                mention: content[i].substring(position - 200, position + 200),
+                mentionNext: content[i].substring(position + 200, position + 500)
+              }
+              await outputCsv.push(output)
             }
           }
-          await outputCsv.push(output)
         }
       }
 

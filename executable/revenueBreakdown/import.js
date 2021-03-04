@@ -5,24 +5,19 @@
     const files = await fs.readdirSync('../../data/revenueByLocation/')
     const CSV = require('../../class/CsvFile')
     let output = []
-    let source = await CSV.from('./一带一路.csv')
-    source = _.uniq(source.map((item) => {
-      return item.stockCode.split('.')[0]
-    }))
-    let i = 0
-    for (const file of files.slice(1500, 2000)) {
-      i++
+    for (const file of files) {
       const code = file.split('.')[0]
-      if (!source.includes(code)) { continue }
       const data = await CSV.from(`../../data/revenueByLocation/${file}`, { noheader: true })
       let count = 0
       // return
       console.log('start')
-      if (['002930', '002931'].includes(code)) {
-        console.log(data)
-        return
+      console.log(data)
+      const fileOutput = {}
+      for (const line of data) {
+        if (!line.field0) { continue }
+        if ()
       }
-
+      return
       const exclude = [data[0].field1, data[1].field1]
       const list = []
       console.log(code)

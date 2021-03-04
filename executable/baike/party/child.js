@@ -19,9 +19,10 @@ process.on('message', async message => {
       console.log(person.name, '已存在')
       continue
     }
+    console.time(index + person.name)
     await finalOutput.push(await collect(person))
+    console.timeEnd(index + person.name)
   }
-
   console.log(index, '结果长度: ', finalOutput.length)
 
   await CSV.to(path, finalOutput)
@@ -50,9 +51,8 @@ async function collect (person) {
   item.title = dom.first().text().replace(' - 百度百科', '')
   item.href = dom.first().attr('href')
   // if (!item.href.includes('https://baike.baidu.com')) item.href = `https://baike.baidu.com${item.href}`
-  console.log(item.title.includes(item.company) * 100)
   const match = item.description.match(new RegExp(item.company, 'g'))
   item.includes = item.title.includes(item.company) * 100 + (match?.length || 0) * 1
-  console.log(item)
+  console.log(item.includes)
   return item
 }
