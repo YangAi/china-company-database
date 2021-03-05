@@ -23,6 +23,7 @@ class Cluster {
     this.crawler = new Crawler()
     this.similarity = stringSimilarity
     this.$db = $db
+    this.data = {}
   }
 
   async prepare () {}
@@ -71,7 +72,7 @@ class Cluster {
       await this.split(await this.input())
       await this.master()
     } else {
-      await this.worker.run()
+      await this.workerRun()
     }
   }
 
@@ -80,6 +81,7 @@ class Cluster {
       console.error('数据未加载。')
       return
     }
+
     this.currentChunk = this.chunkStart
     console.time('总时间')
     for (let i = 0; i < cpuCount; i++) {
@@ -87,7 +89,7 @@ class Cluster {
       this.nextMessage(worker, this.currentChunk)
 
       worker.on('message', async (payload) => {
-        await this.worker.callback(payload)
+        await this.workerCallback(payload)
 
         if (this.currentChunk < this.maxChunk) {
           this.nextMessage(worker, this.currentChunk)
@@ -95,9 +97,8 @@ class Cluster {
 
         finished.push(payload.page || payload)
         console.log(`完成数据批次：${finished.length}`)
-
         if (finished.length === (chunks.length || pageLength)) {
-          await this.finished.callback()
+          await this.finishedCallback()
           console.timeEnd('总时间')
           process.exit(0)
         }
@@ -107,7 +108,7 @@ class Cluster {
 
   getMessage (page) {
     const output = { page, chunkSize: this.chunkSize }
-    if (chunks.length > 0) { output.chunk = chunks[page] }
+    if (chunks.length > 0) { output.chunk = chunks[page] || [] }
     return output
   }
 
@@ -119,25 +120,35 @@ class Cluster {
     this.currentChunk = page + 1
   }
 
-  worker = {
-    run: () => {
-      process.on('message', async (payload) => {
-        console.time(`开始第${payload.page}批数据。`)
-        await this.worker.process(payload)
-      })
-    },
-    send (page, payload) {
-      process.send({
-        ...payload,
-        page
-      })
-    },
-    process () {},
-    callback () {}
+  workerRun () {
+    process.on('message', async (payload) => {
+      console.time(`开始第${payload.page}批数据。`)
+      await this.workerProcess(payload)
+    })
   }
 
-  finished = {
-    callback () {}
+  workerSend (page, payload) {
+    process.send({
+      ...payload,
+      page
+    })
+  }
+
+  workerProcess () {}
+  workerCallback () {}
+
+  finishedCallback () {}
+
+  cleanString (target, keywords) {
+    if (!['string', 'object'].includes(typeof keywords)) {
+      console.error('Wrong keyword type')
+      return target
+    }
+    if (typeof keywords === 'string') { keywords = [keywords] }
+    for (const keyword of keywords) {
+      target = target.replace(keyword, '')
+    }
+    return target
   }
 }
 

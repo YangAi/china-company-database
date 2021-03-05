@@ -1,8 +1,10 @@
 const _ = require('lodash')
 const CSV = require('../../class/CsvFile')
 
-const label = '按地域'
-const path = 'Location';
+const label = '按行业'
+const path = 'Industry';
+// const label = '按地域'
+// const path = 'Location';
 
 (async () => {
   const fs = require('fs-extra')
