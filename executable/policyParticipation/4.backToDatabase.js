@@ -1,5 +1,5 @@
 (async () => {
-  const year =
+  const year = 2016
   const keyword = '一带一路'
   const $db = require('../../lib/mongoose')
   const path = `./导出0204/finished_${keyword}_${year}.csv`
@@ -11,7 +11,7 @@
     }
   })
 
-  console.log(csv)
+  console.log(csv.length)
 
   for (const item of csv) {
     await $db.bri.findOneAndUpdate({ title: item.title, location: item.location, mention: item.mention }, item, {
