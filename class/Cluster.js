@@ -84,7 +84,7 @@ class Cluster {
 
     this.currentChunk = this.chunkStart
     console.time('总时间')
-    for (let i = 0; i < cpuCount; i++) {
+    for (let i = 0; i < this.workerCount; i++) {
       const worker = cluster.fork()
       this.nextMessage(worker, this.currentChunk)
 
