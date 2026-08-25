@@ -1,3 +1,5 @@
+
+
 # china-company-database
 
 ## Project setup
@@ -13,6 +15,11 @@ npm run serve
 ### Compiles and minifies for production
 ```
 npm run build
+```
+
+### Start the API server
+```
+npm run start
 ```
 
 ### Run your unit tests
